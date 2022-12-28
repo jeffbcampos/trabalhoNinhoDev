@@ -5,20 +5,24 @@ class Pokemon:
         self._hp = hp
         self._level = level
 
+    def getNome(self):
+        return self._nome
+
     def checarVantagem(self, pokemonInimigo):
         if self._tipo == 'Normal':
-            if pokemonInimigo['tipo'] == 'Elétrico':
-                pokemonInimigo['hp'] -= 5
-            elif pokemonInimigo['tipo'] == 'Fogo':
-                pokemonInimigo['hp'] -= 5
-            elif pokemonInimigo['tipo'] == 'Água':
-                pokemonInimigo['hp'] -= 5
-            elif pokemonInimigo['tipo'] == 'Grama':
-                pokemonInimigo['hp'] -= 5            
+            if pokemonInimigo._tipo == 'Elétrico':
+                pokemonInimigo._hp -= 5
+            elif pokemonInimigo._tipo == 'Fogo':
+                pokemonInimigo._hp -= 5
+            elif pokemonInimigo._tipo == 'Água':
+                pokemonInimigo._hp -= 5
+            elif pokemonInimigo._tipo == 'Grama':
+                pokemonInimigo._hp -= 5            
             else:
-                pokemonInimigo['hp'] -= 10
+                pokemonInimigo._hp -= 10
         else:
-            pokemonInimigo['hp'] -= 10
+            pokemonInimigo._hp -= 10
+    
 
 
 
@@ -28,14 +32,14 @@ class PokemonEletrico(Pokemon):
     
     def checarVantagem(self, pokemonInimigo):
         if self._tipo == 'Elétrico':
-            if pokemonInimigo['tipo'] == 'Elétrico':
-                pokemonInimigo['hp'] -= 10
-            elif pokemonInimigo['tipo'] == 'Normal':
-                pokemonInimigo['hp'] -= 15
-            elif pokemonInimigo['tipo'] == 'Água':
-                pokemonInimigo['hp'] -= 15
+            if pokemonInimigo._tipo == 'Elétrico':
+                pokemonInimigo._hp -= 10
+            elif pokemonInimigo._tipo == 'Normal':
+                pokemonInimigo._hp -= 15
+            elif pokemonInimigo._tipo == 'Água':
+                pokemonInimigo._hp -= 15
             else:
-                pokemonInimigo['hp'] -= 10
+                pokemonInimigo._hp -= 10
 
 
 
@@ -45,16 +49,16 @@ class PokemonFogo(Pokemon):
 
     def checarVantagem(self, pokemonInimigo):
         if self._tipo == 'Fogo':
-            if pokemonInimigo['tipo'] == 'Fogo':
-                pokemonInimigo['hp'] -= 10
-            elif pokemonInimigo['tipo'] == 'Normal':
-                pokemonInimigo['hp'] -= 15
-            elif pokemonInimigo['tipo'] == 'Água':
-                pokemonInimigo['hp'] -= 5
-            elif pokemonInimigo['tipo'] == 'Grama':
-                pokemonInimigo['hp'] -= 15
+            if pokemonInimigo._tipo == 'Fogo':
+                pokemonInimigo._hp -= 10
+            elif pokemonInimigo._tipo == 'Normal':
+                pokemonInimigo._hp -= 15
+            elif pokemonInimigo._tipo == 'Água':
+                pokemonInimigo._hp -= 5
+            elif pokemonInimigo._tipo == 'Grama':
+                pokemonInimigo._hp -= 15
             else:
-                pokemonInimigo['hp'] -= 10
+                pokemonInimigo._hp -= 10
 
 class PokemonAgua(Pokemon):
     def __init__(self, nome, tipo, hp, level):
@@ -62,14 +66,14 @@ class PokemonAgua(Pokemon):
 
     def checarVantagem(self, pokemonInimigo):
         if self._tipo == 'Água':
-            if pokemonInimigo['tipo'] == 'Água':
-                pokemonInimigo['hp'] -= 10
-            elif pokemonInimigo['tipo'] == 'Normal':
-                pokemonInimigo['hp'] -= 15
-            elif pokemonInimigo['tipo'] == 'Terrestre':
-                pokemonInimigo['hp'] -= 15
+            if pokemonInimigo._tipo == 'Água':
+                pokemonInimigo._hp -= 10
+            elif pokemonInimigo._tipo == 'Normal':
+                pokemonInimigo._hp -= 15
+            elif pokemonInimigo._tipo == 'Terrestre':
+                pokemonInimigo._hp -= 15
             else:
-                pokemonInimigo['hp'] -= 10
+                pokemonInimigo._hp -= 10
 
 class PokemonGrama(Pokemon):
     def __init__(self, nome, tipo, hp, level):
@@ -77,11 +81,25 @@ class PokemonGrama(Pokemon):
 
     def checarVantagem(self, pokemonInimigo):
         if self._tipo == 'Grama':            
-            if pokemonInimigo['tipo'] == 'Terrestre':
-                pokemonInimigo['hp'] -= 15
-            elif pokemonInimigo['tipo'] == 'Fogo':
-                pokemonInimigo['hp'] -= 5
-            elif pokemonInimigo['tipo'] == 'Água':
-                pokemonInimigo['hp'] -= 15
+            if pokemonInimigo._tipo == 'Terrestre':
+                pokemonInimigo._hp -= 15
+            elif pokemonInimigo._tipo == 'Fogo':
+                pokemonInimigo._hp -= 5
+            elif pokemonInimigo._tipo == 'Água':
+                pokemonInimigo._hp -= 15
             else:
-                pokemonInimigo['hp'] -= 10
+                pokemonInimigo._hp -= 10
+
+def adicionarClassePokemon(pokemonSelvagem):
+    if pokemonSelvagem['tipo'] == 'Elétrico':
+            pokemonSelvagem = PokemonEletrico(pokemonSelvagem['nome'], pokemonSelvagem['tipo'], pokemonSelvagem['hp'], pokemonSelvagem['level'])
+    elif pokemonSelvagem['tipo'] == 'Fogo':
+        pokemonSelvagem = PokemonFogo(pokemonSelvagem['nome'], pokemonSelvagem['tipo'], pokemonSelvagem['hp'], pokemonSelvagem['level'])
+    elif pokemonSelvagem['tipo'] == 'Água':
+        pokemonSelvagem = PokemonAgua(pokemonSelvagem['nome'], pokemonSelvagem['tipo'], pokemonSelvagem['hp'], pokemonSelvagem['level'])
+    elif pokemonSelvagem['tipo'] == 'Grama':
+        pokemonSelvagem = PokemonGrama(pokemonSelvagem['nome'], pokemonSelvagem['tipo'], pokemonSelvagem['hp'], pokemonSelvagem['level'])
+    else:
+        pokemonSelvagem = Pokemon(pokemonSelvagem['nome'], pokemonSelvagem['tipo'], pokemonSelvagem['hp'], pokemonSelvagem['level'])
+    
+    return pokemonSelvagem

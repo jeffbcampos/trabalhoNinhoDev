@@ -6,13 +6,14 @@ treinadorInimigo = []
 pokemonsJogador = []
 opcao = ''
 
-def pokemonsInimigos(treinadorInimigo):    
+def pokemonsInimigos(treinadorInimigo):   #Laço for pra gerar a lista de 6 pokemons de cada treinador inimigo 
     for p in range(0, 3):
-        treinadorInimigo.append(pokemons[randint(0, 149)]) #Laço for pra gerar a lista de 6 pokemons de cada treinador inimigo
+        pokemonAleatorio = pokemons[randint(0, 149)]        
+        treinadorInimigo.append(classPokemon.adicionarClassePokemon(pokemonAleatorio))
     print(f'''Os pokemons do seu Inimigo são:
-            1- {treinadorInimigo[0]['nome']}
-            2- {treinadorInimigo[1]['nome']}
-            3- {treinadorInimigo[2]['nome']}
+            1- {treinadorInimigo[0].getNome()}
+            2- {treinadorInimigo[1].getNome()}
+            3- {treinadorInimigo[2].getNome()}
             ''')
     return treinadorInimigo
 
@@ -21,16 +22,7 @@ def escolherPokemons(pokemonsJogador): #Função Jogador escolher seus pokemons!
         pokemonJogador = input(f'Digite o {p + 1}º pokemon da sua equipe: ').capitalize()
         for pokemon in pokemons:
             if pokemonJogador == pokemon['nome']:
-                if pokemon['tipo'] == 'Elétrico':
-                    pokemonsJogador.append(classPokemon.PokemonEletrico(pokemon['nome'], pokemon['tipo'], pokemon['hp'], pokemon['level']))
-                elif pokemon['tipo'] == 'Fogo':
-                    pokemonsJogador.append(classPokemon.PokemonFogo(pokemon['nome'], pokemon['tipo'], pokemon['hp'], pokemon['level']))
-                elif pokemon['tipo'] == 'Água':
-                    pokemonsJogador.append(classPokemon.PokemonAgua(pokemon['nome'], pokemon['tipo'], pokemon['hp'], pokemon['level']))
-                elif pokemon['tipo'] == 'Grama':
-                    pokemonsJogador.append(classPokemon.PokemonGrama(pokemon['nome'], pokemon['tipo'], pokemon['hp'], pokemon['level']))
-                else:
-                    pokemonsJogador.append(classPokemon.Pokemon(pokemon['nome'], pokemon['tipo'], pokemon['hp'], pokemon['level']))                       
+                pokemonsJogador.append(classPokemon.adicionarClassePokemon(pokemon))                      
     
     while(len(pokemonsJogador) < 3):
         pokemonsJogador.clear()
@@ -43,14 +35,14 @@ def escolherPokemons(pokemonsJogador): #Função Jogador escolher seus pokemons!
 def batalhaPokemon(pokemonInimigo):
     pokemonEscolhido = int(input(f'''
     Escolha qual pokemon usar:
-    1- {pokemonsJogador[0]._nome}
-    2- {pokemonsJogador[1]._nome}
-    3- {pokemonsJogador[2]._nome}
+    1- {pokemonsJogador[0].getNome()}
+    2- {pokemonsJogador[1].getNome()}
+    3- {pokemonsJogador[2].getNome()}
     '''))
     pokemonEscolhido = pokemonsJogador[pokemonEscolhido - 1]
-    print(f"Você escolheu {pokemonEscolhido._nome}")
+    print(f"Você escolheu {pokemonEscolhido.getNome()}")
     opcao = ''
-    while(pokemonInimigo['hp'] > 0):
+    while(pokemonInimigo._hp > 0):
         opcao = input('''
         O que deseja realizar?
         1- Atacar
@@ -58,26 +50,20 @@ def batalhaPokemon(pokemonInimigo):
         3- Fugir
         ''')
         if opcao == '1':
-            print(f"{pokemonEscolhido._nome} atacou {pokemonInimigo['nome']}!")
+            print(f"{pokemonEscolhido.getNome()} atacou {pokemonInimigo.getNome()}!")
             pokemonEscolhido.checarVantagem(pokemonInimigo)
-            print(f"{pokemonInimigo['nome']} sofreu dano e está com {pokemonInimigo['hp']} de HP")
+            if pokemonInimigo._hp >= 0:
+                print(f"{pokemonInimigo.getNome()} sofreu dano e está com {pokemonInimigo._hp} de HP")
+            else:
+                pokemonInimigo._hp = 0
+                print(f"{pokemonInimigo.getNome()} sofreu dano e está com {pokemonInimigo._hp} de HP")
     return print("Você venceu!")
 
 def batalhaInimigo(pokemonsJogador, treinadorInimigo):
     treinadorInimigo = []    
     pokemonsInimigos(treinadorInimigo)
     inimigoEscolhido = treinadorInimigo[randint(0, 2)]
-    print(f"O Pokemon que seu inimigo escolhe é: \n{inimigoEscolhido['nome']}")
-    # pokemonEscolhido = int(input(f'''
-    # Escolha qual pokemon usar:
-    # 1- {pokemonsJogador[0]['nome']}
-    # 2- {pokemonsJogador[1]['nome']}
-    # 3- {pokemonsJogador[2]['nome']}
-    # '''))
-    # pokemonEscolhido = pokemonsJogador[pokemonEscolhido - 1]
-    # print(f"\nVocê escolheu {pokemonEscolhido['nome']}")
-    # inimigoEscolhido = treinadorInimigo[randint(0, 2)]     
-    # print(f"O Pokemon que seu inimigo escolhe é: \n{inimigoEscolhido['nome']}")
+    print(f"O Pokemon que seu inimigo escolhe é: \n{inimigoEscolhido.getNome()}")    
     batalhaPokemon(inimigoEscolhido)
 
 def menu():
@@ -93,9 +79,10 @@ def menu():
         if opcao ==  '1':
             print("Caçando Pokemon...")
             pokemonSelvagem = pokemons[randint(0, 149)]
-            print(f"{pokemonSelvagem['nome']} apareceu!")
+            pokemonSelvagem = classPokemon.adicionarClassePokemon(pokemonSelvagem)                       
+            print(f"{pokemonSelvagem.getNome()} apareceu!")
             batalhaPokemon(pokemonSelvagem)
-            print(f"Você capturou {pokemonSelvagem['nome']}")
+            print(f"Você capturou {pokemonSelvagem.getNome()}")
         elif opcao == '2':            
             print("Procurando Treinador pokemon...")
             print("Inimigo: - Prepara-se para batalha!")                        
@@ -103,9 +90,9 @@ def menu():
         elif opcao == '3':
             print(f'''
             Estes são os seus pokemons:
-            1- {pokemonsJogador[0]._nome}
-            2- {pokemonsJogador[1]._nome}
-            3- {pokemonsJogador[2]._nome}
+            1- {pokemonsJogador[0].getNome()}
+            2- {pokemonsJogador[1].getNome()}
+            3- {pokemonsJogador[2].getNome()}
             ''')
         elif opcao == '4':
             print("Fim de programa")
@@ -114,17 +101,12 @@ def menu():
 
                     
 escolherPokemons(pokemonsJogador)
-        
-# print(f'''
-#     Você escolheu:
-#     1- {pokemonsJogador[0]['nome']}
-#     2- {pokemonsJogador[1]['nome']}
-#     3- {pokemonsJogador[2]['nome']}
-#     ''')
+
 print(f'''
     Você escolheu:
-    1- {pokemonsJogador[0]._nome}
-    2- {pokemonsJogador[1]._nome}
-    3- {pokemonsJogador[2]._nome}
+    1- {pokemonsJogador[0].getNome()}
+    2- {pokemonsJogador[1].getNome()}
+    3- {pokemonsJogador[2].getNome()}
     ''')
+
 menu()           
