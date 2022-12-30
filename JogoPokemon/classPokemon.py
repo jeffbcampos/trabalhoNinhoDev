@@ -72,6 +72,8 @@ class PokemonAgua(Pokemon):
                 pokemonInimigo._hp -= 15
             elif pokemonInimigo._tipo == 'Terrestre':
                 pokemonInimigo._hp -= 15
+            elif pokemonInimigo._tipo == 'Fogo':
+                pokemonInimigo._hp -= 15
             else:
                 pokemonInimigo._hp -= 10
 

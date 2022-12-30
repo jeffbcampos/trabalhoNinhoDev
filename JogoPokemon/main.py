@@ -5,6 +5,7 @@ import classPokemon
 treinadorInimigo = []
 pokemonsJogador = []
 opcao = ''
+vencedor = False
 
 def pokemonsInimigos(treinadorInimigo):   #Laço for pra gerar a lista de 6 pokemons de cada treinador inimigo 
     for p in range(0, 3):
@@ -31,34 +32,81 @@ def escolherPokemons(pokemonsJogador): #Função Jogador escolher seus pokemons!
 
     return pokemonsJogador
 
+def evase(pokemonJogador, pokemonAdversario):
+    sorteJogador = randint(0, 10)
+    sorteInimigo = randint(0, 10)
+    if sorteJogador > sorteInimigo:
+        pokemonJogador.checarVantagem(pokemonAdversario)
+    else:
+        print("Errou o ataque!")
+
+def escolherPokemon():
+    controle = 0    
+    while controle == 0:        
+        pokemonEscolhido = input(f'''
+        Escolha qual pokemon usar:
+        1- {pokemonsJogador[0].getNome()}
+        2- {pokemonsJogador[1].getNome()}
+        3- {pokemonsJogador[2].getNome()}        
+        4- Fugir
+        ''')
+        if pokemonEscolhido == '1' or pokemonEscolhido == '2' or pokemonEscolhido == '3':
+            if pokemonsJogador[int(pokemonEscolhido) - 1]._hp == 0:
+                print(f"{pokemonsJogador[int(pokemonEscolhido) - 1].getNome()} está desmaiado, não pode ser usado!")
+            else:
+                controle = 1
+        elif pokemonEscolhido == '4':
+            print("Você fugiu!")
+            break        
+        else:
+            print("Opção Inválida!")
+        
+    return int(pokemonEscolhido)
+            
 
 def batalhaPokemon(pokemonInimigo):
-    pokemonEscolhido = int(input(f'''
-    Escolha qual pokemon usar:
-    1- {pokemonsJogador[0].getNome()}
-    2- {pokemonsJogador[1].getNome()}
-    3- {pokemonsJogador[2].getNome()}
-    '''))
-    pokemonEscolhido = pokemonsJogador[pokemonEscolhido - 1]
-    print(f"Você escolheu {pokemonEscolhido.getNome()}")
-    opcao = ''
-    while(pokemonInimigo._hp > 0):
-        opcao = input('''
-        O que deseja realizar?
-        1- Atacar
-        2- Defender
-        3- Fugir
-        ''')
-        if opcao == '1':
-            print(f"{pokemonEscolhido.getNome()} atacou {pokemonInimigo.getNome()}!")
-            pokemonEscolhido.checarVantagem(pokemonInimigo)
-            if pokemonInimigo._hp >= 0:
-                print(f"{pokemonInimigo.getNome()} sofreu dano e está com {pokemonInimigo._hp} de HP")
+    pokemonEscolhido = escolherPokemon()       
+    while True:
+        if pokemonEscolhido == 4:
+            break
+        pokemonEscolhido = pokemonsJogador[pokemonEscolhido - 1]     
+        print(f"Você escolheu {pokemonEscolhido.getNome()}")
+        opcao = ''    
+        while(pokemonInimigo._hp > 0 or pokemonEscolhido._hp > 0):
+            while opcao != '1' or opcao != '2':
+                opcao = input('''
+                        O que deseja realizar?
+                        1- Atacar
+                        2- Defender
+                        ''')
+                if opcao == '1':                
+                    print(f"{pokemonEscolhido.getNome()} atacou {pokemonInimigo.getNome()}!")
+                    evase(pokemonEscolhido, pokemonInimigo)                    
+                    if pokemonInimigo._hp > 0:                
+                        print(f"O HP de {pokemonInimigo.getNome()} é {pokemonInimigo._hp}")
+                        break
+                    else:
+                        pokemonInimigo._hp = 0
+                        print(f"O HP de {pokemonInimigo.getNome()} é {pokemonInimigo._hp}")
+                        global vencedor                    
+                        vencedor = True                    
+                        return print("Você venceu!")
+                elif opcao == '2':
+                    print("Você vai tentar defender!")                
+                else:
+                    print("Opção inválida!")            
+            print("Seu Inimigo está preparando para atacar...")    
+            print(f"{pokemonInimigo.getNome()} atacou {pokemonEscolhido.getNome()}!")
+            evase(pokemonInimigo, pokemonEscolhido)            
+            if pokemonEscolhido._hp > 0:
+                print(f"O HP de {pokemonEscolhido.getNome()} é {pokemonEscolhido._hp}")
             else:
-                pokemonInimigo._hp = 0
-                print(f"{pokemonInimigo.getNome()} sofreu dano e está com {pokemonInimigo._hp} de HP")
-    return print("Você venceu!")
-
+                pokemonEscolhido._hp = 0
+                print(f"O HP de {pokemonEscolhido.getNome()} é {pokemonEscolhido._hp}")                
+                vencedor = False                
+                return print("Você Perdeu!")  
+                       
+    
 def batalhaInimigo(pokemonsJogador, treinadorInimigo):
     treinadorInimigo = []    
     pokemonsInimigos(treinadorInimigo)
@@ -66,36 +114,56 @@ def batalhaInimigo(pokemonsJogador, treinadorInimigo):
     print(f"O Pokemon que seu inimigo escolhe é: \n{inimigoEscolhido.getNome()}")    
     batalhaPokemon(inimigoEscolhido)
 
+
+def centroPokemon(pokemonsJogador):
+    for p in range(0, 3):
+        for pokemon in pokemons:
+            if pokemonsJogador[p].getNome() == pokemon['nome']:
+                pokemonsJogador[p]._hp = pokemon['hp']
+
+
 def menu():
-    opcao = ''
-    while(opcao != '4'):
-        opcao = input('''
+    opcaoMenu = ''
+    while(opcaoMenu != '5'):
+        opcaoMenu = input('''
         Digite a opção desejada: 
         1- Capturar Pokemon
         2- Procurar batalha pokemon
         3- Exibir seus pokemons
-        4- Sair
+        4- Curar pokemons
+        5- Sair
         ''')
-        if opcao ==  '1':
+        if opcaoMenu ==  '1':
             print("Caçando Pokemon...")
             pokemonSelvagem = pokemons[randint(0, 149)]
             pokemonSelvagem = classPokemon.adicionarClassePokemon(pokemonSelvagem)                       
             print(f"{pokemonSelvagem.getNome()} apareceu!")
             batalhaPokemon(pokemonSelvagem)
-            print(f"Você capturou {pokemonSelvagem.getNome()}")
-        elif opcao == '2':            
+            if vencedor == True:
+                print(f"Você capturou {pokemonSelvagem.getNome()}")
+        elif opcaoMenu == '2':            
             print("Procurando Treinador pokemon...")
             print("Inimigo: - Prepara-se para batalha!")                        
             batalhaInimigo(pokemonsJogador, treinadorInimigo)
-        elif opcao == '3':
+        elif opcaoMenu == '3':
             print(f'''
             Estes são os seus pokemons:
             1- {pokemonsJogador[0].getNome()}
             2- {pokemonsJogador[1].getNome()}
             3- {pokemonsJogador[2].getNome()}
             ''')
-        elif opcao == '4':
-            print("Fim de programa")
+        elif opcaoMenu == '4':
+            print("Curando pokemons...")
+            centroPokemon(pokemonsJogador)
+            print("Pokemons Curados!")
+            print(f'''
+            {pokemonsJogador[0].getNome()}: {pokemonsJogador[0]._hp}
+            {pokemonsJogador[1].getNome()}: {pokemonsJogador[1]._hp}
+            {pokemonsJogador[2].getNome()}: {pokemonsJogador[2]._hp}
+            ''')
+            
+        elif opcaoMenu == '5':
+            print("Fim de programa")            
         else:
             print("Opção Inválida! Tente novamente.")
 
