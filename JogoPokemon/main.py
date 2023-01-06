@@ -1,3 +1,5 @@
+# Jogo Pokemon simples em python baseado em classes e subclasses 
+
 from pokedex import pokemons
 from random import randint
 import classPokemon
