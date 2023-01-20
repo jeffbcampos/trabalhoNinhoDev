@@ -1,10 +1,50 @@
-# Jogo Pokemon simples em python baseado em classes e subclasses 
-
 from pokedex import pokemons
 from random import randint
 import classPokemon
 from random import choice
 import classTreinador
+import json
+
+with open("./pcDoBill.json") as b:
+    banco = json.load(b)
+
+# def salvarBanco(pcDoBill):
+#     novoBanco = []
+
+#     for pc in pcDoBill:
+#         novoBanco.append({"nome": pc._nome, "tipo": pc._tipo, "hp": pc._hp, "level": pc._level})
+    
+#     with open("./pcDoBill.json", 'w') as nb:
+#         json.dump(novoBanco, nb, indent=2)
+
+ 
+def saveGame(pokemonsJogador, pcDoBill):
+    bancoPokemonsJogador = []
+    novoBanco = []
+
+    for pokemon in pokemonsJogador:
+        bancoPokemonsJogador.append({"nome": pokemon._nome, "tipo": pokemon._tipo, "hp": pokemon._hp, "level": pokemon._level})
+    
+    with open("./saveGame.json", 'w') as nb:
+        json.dump(bancoPokemonsJogador, nb, indent=2)
+
+    for pc in pcDoBill:
+        novoBanco.append({"nome": pc._nome, "tipo": pc._tipo, "hp": pc._hp, "level": pc._level})
+    
+    with open("./pcDoBill.json", 'w') as nb:
+        json.dump(novoBanco, nb, indent=2)
+
+    print("Jogo Salvo com Sucesso!")
+
+def loadGame():
+    with open("./saveGame.json") as s:
+        saveGame = json.load(s)
+
+    for pokemon in banco:
+        pcDoBill.append(classPokemon.adicionarClassePokemon(pokemon))
+
+    for pokemonPlayer in saveGame:
+        pokemonsJogador.append(classPokemon.adicionarClassePokemon(pokemonPlayer))
 
 nomes_esquisitos = ['Xanthe', 'Uvularia', 'Mephitis', 'Jyoti', 'Huxley', 'Flaminia', 'Eurydice', 'Quirinus', 'Pemba', 'Oread']
 treinadorInimigo = []
@@ -12,6 +52,7 @@ pokemonsJogador = []
 opcao = ''
 vencedor = False
 pcDoBill = []
+nomeJogador = ''
 
 # def pokemonsInimigos(treinadorInimigo):   #Laço for pra gerar a lista de 6 pokemons de cada treinador inimigo 
 #     for p in range(0, 3):
@@ -174,16 +215,37 @@ def centroPokemon(pokemonsJogador):
                 pokemonsJogador[p]._hp = pokemon['hp']
 
 
+def trocaPokemon():
+    print("\nDigite o índice do Pokemon que deseja guardar no PC do Bill:")
+    print(f'''
+    1 - {pokemonsJogador[0].getNome()}
+    2 - {pokemonsJogador[1].getNome()}
+    3 - {pokemonsJogador[2].getNome()}
+    ''')
+    indexSai = int(input("\n"))
+    pokemonSai = pokemonsJogador[indexSai - 1]
+    del pokemonsJogador[indexSai - 1]
+    print("Agora digite o indice do Pokemon que deseja retirar do Bill:")
+    for i in range(len(pcDoBill)):
+        print(f"{i + 1} - {pcDoBill[i].getNome()}")
+    indexEntra = int(input("\n"))
+    pokemonEntra = pcDoBill[indexEntra - 1]
+    del pcDoBill[indexEntra - 1]
+    pokemonsJogador.append(pokemonEntra)
+    pcDoBill.append(pokemonSai)
+
+
 def menu():
     opcaoMenu = ''
-    while(opcaoMenu != '5'):
+    while(opcaoMenu != '6'):
         opcaoMenu = input('''
         Digite a opção desejada:\n 
         1- Capturar Pokemon
         2- Procurar batalha pokemon
         3- Exibir seus pokemons
         4- Curar pokemons
-        5- Sair
+        5- Trocar Pokemon
+        6- Sair e Salvar o Jogo
         ''')
         if opcaoMenu ==  '1':
             print("\nCaçando Pokemon...")
@@ -199,6 +261,7 @@ def menu():
                     print(f"Você capturou {pokemonSelvagem.getNome()}")
                     pcDoBill.append(pokemonSelvagem)
                     print("Você não pode carregar mais de 3 pokemons. Enviado para o PC do Bill")
+                    # salvarBanco(pcDoBill)
         elif opcaoMenu == '2':            
             print("\nProcurando Treinador pokemon...")                     
             batalhaInimigo(treinadorInimigo)
@@ -224,23 +287,43 @@ def menu():
             # {pokemonsJogador[1].getNome()}: {pokemonsJogador[1]._hp}
             # {pokemonsJogador[2].getNome()}: {pokemonsJogador[2]._hp}
             # ''')
-            
         elif opcaoMenu == '5':
-            print("Fim de programa")            
+            trocaPokemon()    
+        elif opcaoMenu == '6':
+            print("Salvando o jogo...")
+            saveGame(pokemonsJogador, pcDoBill)            
         else:
             print("\nOpção Inválida! Tente novamente.")
 
-                    
+player1 = classTreinador.Treinador(nomeJogador, pokemonsJogador)                       
 #escolherPokemons(pokemonsJogador)
-nomeJogador = input("Parabéns, você é o mais novo treinador pokemon de Pallet, me diga qual é o seu nome: ")
-player1 = classTreinador.Treinador(nomeJogador, pokemonsJogador)
-player1.pokemonInicial()
-print(f'Seu primeiro pokemon é: {pokemonsJogador[0].getNome()}')
+
 # print(f'''
 #     Você escolheu:\n
 #     1- {pokemonsJogador[0].getNome()}
 #     2- {pokemonsJogador[1].getNome()}
 #     3- {pokemonsJogador[2].getNome()}
 #     ''')
+def menuInicial():
+    print("Bem vindo ao jogo Pokemon!")
+    print("O que deseja fazer:")
+    print("1 - Novo Jogo")
+    print("2 - Carregar Jogo")
+    escolha = input("\n")
+    if escolha == '1':
+        nomeJogador = input("Parabéns, você é o mais novo treinador pokemon de Pallet, me diga qual é o seu nome: ")
+        player1 = classTreinador.Treinador(nomeJogador, pokemonsJogador)
+        player1.pokemonInicial()
+        print(f'Seu primeiro pokemon é: {pokemonsJogador[0].getNome()}')
+        menu()
+    else:
+        loadGame()
+        if len(pokemonsJogador) == 0:
+            print("Não há nenhum jogo salvo")
+            menuInicial()
+        else:
+            menu()
 
-menu()           
+
+menuInicial()        
+                 

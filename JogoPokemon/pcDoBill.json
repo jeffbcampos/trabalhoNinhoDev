@@ -1,0 +1,38 @@
+[
+  {
+    "nome": "Poliwag",
+    "tipo": "\u00c1gua",
+    "hp": 40,
+    "level": 1
+  },
+  {
+    "nome": "Caterpie",
+    "tipo": "Inseto",
+    "hp": 0,
+    "level": 1
+  },
+  {
+    "nome": "Caterpie",
+    "tipo": "Inseto",
+    "hp": 0,
+    "level": 1
+  },
+  {
+    "nome": "Magnemite",
+    "tipo": "El\u00e9trico",
+    "hp": 0,
+    "level": 1
+  },
+  {
+    "nome": "Doduo",
+    "tipo": "Normal",
+    "hp": 0,
+    "level": 1
+  },
+  {
+    "nome": "Bulbasaur",
+    "tipo": "Grama",
+    "hp": 45,
+    "level": 1
+  }
+]

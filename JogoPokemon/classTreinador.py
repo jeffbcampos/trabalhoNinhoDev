@@ -2,6 +2,7 @@ from pokedex import pokemons
 import classPokemon
 from random import choice
 
+
 class Treinador:
     def __init__(self, nome, listaPokemons = []):
         self._nome = nome

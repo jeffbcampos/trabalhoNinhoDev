@@ -1,0 +1,20 @@
+[
+  {
+    "nome": "Hitmonlee",
+    "tipo": "Lutador",
+    "hp": 50,
+    "level": 1
+  },
+  {
+    "nome": "Primeape",
+    "tipo": "Lutador",
+    "hp": 65,
+    "level": 28
+  },
+  {
+    "nome": "Krabby",
+    "tipo": "\u00c1gua",
+    "hp": 0,
+    "level": 1
+  }
+]
