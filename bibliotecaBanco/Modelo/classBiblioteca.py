@@ -15,7 +15,7 @@ class Biblioteca:
             print(f"Páginas: {livro[2]}")
             print(f"Ano: {livro[3]}")
             print(f"Autor: {livro[4]}")
-            print("=====================================")
+            print("\n=====================================\n")
 
     def getLivros(self, cursor):
         cursor.execute("SELECT * FROM livros")
@@ -33,6 +33,9 @@ class Biblioteca:
 
     def atualizarLivro(self, cursor):
         self.id = int(input("Digite o ID do livro que deseja atualizar: "))
+        while not self.validacaoBuscaLivro(cursor, self.id):
+            print("ID inválido")
+            self.id = int(input("Digite o ID do livro que deseja atualizar: "))
         self.nome = input("Digite o novo nome do livro: ")
         self.paginas = int(input("Digite a nova quantidade de páginas: "))
         self.ano = int(input("Digite o novo ano de lançamento: "))
@@ -42,5 +45,15 @@ class Biblioteca:
 
     def deletarLivro(self, cursor):
         self.id = int(input("Digite o ID do livro que deseja deletar: "))
+        while not self.validacaoBuscaLivro(cursor, self.id):
+            print("ID inválido")
+            self.id = int(input("Digite o ID do livro que deseja deletar: "))
         cursor.execute(f"DELETE FROM livros WHERE livro_id={self.id}")
         print("Livro deletado com sucesso")
+    
+    def validacaoBuscaLivro(self, cursor, id):
+        livros = self.getLivros(cursor)
+        for livro in livros:
+            if livro[0] == id:
+                return True
+        return False

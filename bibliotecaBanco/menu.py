@@ -12,7 +12,7 @@ def menu():
         print("4 - Deletar livro")
         print("5 - Sair")
 
-        opcao = int(input("Digite a opção desejada: "))
+        opcao = int(input("\nDigite a opção desejada: "))
         
         
         match opcao:
