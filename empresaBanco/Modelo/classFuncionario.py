@@ -29,4 +29,4 @@ class Funcionario:
         print(f"CPF: {self.getCpf()}")
         print(f"Salário: {self.getSalario()}")
         print(f"ID Departamento: {self.getDept()}")
-        print(f"Cargo: {self.getCargo()}")    
+        print(f"Cargo: {self.getCargo()}\n")    

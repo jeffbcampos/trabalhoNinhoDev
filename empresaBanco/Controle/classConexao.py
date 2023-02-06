@@ -7,8 +7,7 @@ import os
 class Conexao:
     def __init__(self):
         try:
-            self.db = connect(host=os.getenv("HOST"), user=os.getenv("USER"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"), database=os.getenv("DATABASE"))
-            print("Conexão realizada com sucesso")
+            self.db = connect(host=os.getenv("HOST"), user=os.getenv("USER"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"), database=os.getenv("DATABASE"))            
         except Error as err:
             print(f"Error: {err}")
 

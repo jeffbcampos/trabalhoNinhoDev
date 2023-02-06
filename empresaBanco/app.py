@@ -1,15 +1,19 @@
 from Controle.classConexao import Conexao
-from Modelo.classFuncionario import Funcionario
+
 from Modelo.classEmpresa import Empresa
+from Modelo.classEmpresa import Funcionario
 
 
 con = Conexao()
 
-cursor = con.db.cursor
+cursor = con.db.cursor()
 
-query = con.querySelect(cursor, 7)[0]
+cursor.execute('''SELECT * FROM funcionarios where func_id = '7'; ''')
 
-func = Funcionario(query[0],query[1],query[2],query[3],query[4],query[5])
+dadosFunc = cursor.fetchall()[0]
 
-func.funcDados()
+func = Funcionario(dadosFunc[0], dadosFunc[1], dadosFunc[2], dadosFunc[3], dadosFunc[4], dadosFunc[5])
+
+func.signin()
+
 
