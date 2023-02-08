@@ -1,9 +1,9 @@
 from Controle.classConexao import Conexao
+from pwinput import pwinput
 
 class Empresa:
-    def __init__(self, login, senha):
-        self.login = login
-        self.senha = senha
+    def __init__(self) -> None:
+        pass
 
     def signin(self):
         con = Conexao()
@@ -20,10 +20,15 @@ class Empresa:
                     senha = loginBanco[0][1]
                     loginUser = input("Digite seu login: ")
                     if loginUser == login:
-                        senhaUser = input("Digite sua senha: ")
+                        senhaUser = pwinput("Digite sua senha: ")
                         if senhaUser == senha:
                             print("Login realizado com sucesso!")
-                            break
+                            cursor.execute(f'''SELECT * FROM funcionarios where func_id = '{id}' ''')
+                            funcDados = cursor.fetchall()[0]
+                            func = Funcionario(funcDados[0],funcDados[1],funcDados[2],funcDados[3],funcDados[4],funcDados[5])
+                            cursor.close()
+                            con.db.close()
+                            return func                            
                         else:
                             print("Senha Inválida!")
                     else:
