@@ -35,12 +35,9 @@ class Empresa:
                         print("Login Inválido!")     
                 break
 
-
-
-
 class Funcionario(Empresa):
     def __init__(self, login, senha):
-        super().__init__(login, senha)
+        super().__init__(login, senha)        
     def __init__(self, func_id, func_nome, func_cpf, func_salario, dept_id, func_cargo):
         self.id = func_id
         self.nome = func_nome

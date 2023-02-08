@@ -5,6 +5,7 @@ load_dotenv()
 import os
 from pwinput import pwinput
 
+
 class Conexao:
     def __init__(self):
         try:
@@ -12,7 +13,7 @@ class Conexao:
         except Error as err:
             print(f"Error: {err}")
 
-    def querySelectAllFuncs(self, cursor, id):
+    def querySelectFunc(self, cursor, id):
         cursor = self.db.cursor()
         cursor.execute(f'''
         SELECT * FROM funcionarios WHERE func_id = '{id}';
@@ -25,22 +26,27 @@ class Conexao:
             DELETE FROM funcionarios WHERE func_id = '{id}';
         ''')
 
-    def queryCreateFunc(self, cursor, nome, cpf, salario, dept, cargo):
+    def queryCreateFunc(self, cursor, nome, cpf, salario, dept, cargo, login, senha):
         cursor = self.db.cursor()
         cursor.execute(f'''
             INSERT INTO funcionarios (func_nome, func_cpf, func_salario, dept_id, func_cargo) VALUES (
-	        '{nome}', '{cpf}', {salario}, {dept}, '{cargo}');
+	        '{nome}', '{cpf}', {salario}, {dept}, '{cargo}');            
         ''')
         self.db.commit()
+        cursor.execute(f'''SELECT func_id FROM funcionarios WHERE func_cpf = '{cpf}';''')
+        id = cursor.fetchall()[0][0]
+        cursor.execute(f'''INSERT INTO signin (func_id, login, senha) VALUES ('{id}', '{login}', '{senha}');''')
+        self.db.commit()
     
-    def queryUpdateFunc(self, cursor, novoNome, novoCpf, novoSalario, novoDept, novoCargo):
+    def queryUpdateFunc(self, cursor, novoNome, novoCpf, novoSalario, novoDept, novoCargo, funcionario):
         cursor = self.db.cursor()
         cursor.execute(f'''
             UPDATE funcionarios SET func_nome = '{novoNome}',
             func_cpf = '{novoCpf}',
-            func_salario = {novoSalario},
-            dept_id = {novoDept},
-            func_cargo = {novoCargo}
+            func_salario = '{novoSalario}',
+            dept_id = '{novoDept}',
+            func_cargo = '{novoCargo}'
+            WHERE func_id = '{funcionario.id}'            
         ''')
         
     def queryUpdateLogin(self, cursor, func):
@@ -64,7 +70,7 @@ class Conexao:
     def queryUpdatePassword(self, cursor, func):
         cursor = self.db.cursor()
         senha = pwinput("Confirme sua senha antiga: ")
-        cursor.execute(f"SELECT senha FROM signin WHERE func_id = '{func.id}'")
+        cursor.execute(f'''SELECT senha FROM signin WHERE func_id = '{func.id}';''')
         senhaAntiga = cursor.fetchall()[0][0]
         if senha == senhaAntiga:
             novaSenha = pwinput("Digite a nova senha: ")
@@ -80,7 +86,32 @@ class Conexao:
                     return
                 else:
                     self.queryUpdatePassword(cursor, func)
-        
     
-
+    def verifyPwd(self, cursor, func):            
+            cursor = self.db.cursor()
+            cursor.execute(f'''SELECT senha from signin where func_id = {func.id};''')
+            senhaBanco = cursor.fetchall()[0][0]            
+            senha = pwinput("Digite sua senha para confirmar as alterações: ")
+            if senha == senhaBanco:                
+                return True                
+            else:
+                cancelar = input("Senha incorreta! Deseja tentar novamente?[s/n]: ")
+                if cancelar == "s":
+                    self.verifyPwd(cursor, func)
+                    return True                    
+                else:
+                    return False
+    def queryDismiss(self, cursor, func):
+        cursor = self.db.cursor()
+        cursor.execute(f'''UPDATE funcionarios SET func_nome = '{func.nome} (demitido)',
+            func_cpf = '{func.cpf}',
+            func_salario = NULL,
+            dept_id = NULL,
+            func_cargo = NULL
+            WHERE func_id = '{func.id}';''')
+        self.db.commit()
+        cursor.execute(f'''DELETE FROM signin WHERE func_id = '{func.id}';''')
+        self.db.commit()
+        print("Funcionário demitido com sucesso!")            
+    
 
