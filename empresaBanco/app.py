@@ -72,6 +72,22 @@ def menuFunc(func):
                 case _:
                     print("Opção inválida!")
 
+def menuGerente(func):
+    print(f"Bem vindo {func.nome}")
+    while True:
+        print("O que deseja realizar: ")
+        print('''
+              1- Ver sua equipe
+              2- Alterar Dados de um funcionário
+              3- Adicionar funcionáro
+              4- Desligar funcionário da Empresa''')
+        opcao = input()
+        match opcao:
+            case '1':
+                con = Conexao()
+                cursor = con.db.cursor()
+                cursor.execute(f'''SELECT f.func_nome as Nome, f.func_cpf as CPF, f.func_salario as Salário, f.func_cargo as Cargo from funcionarios inner join departamentos d on f.dept_id = d.dept_id where func_dept = {func.dept_id}''')
+            
 
 login()
     
