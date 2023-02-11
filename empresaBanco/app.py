@@ -1,9 +1,6 @@
-from Controle.classConexao import Conexao
-import pandas as pd
-from pwinput import pwinput
-
 from Modelo.classEmpresa import Empresa
 from Modelo.classEmpresa import Funcionario
+
 
 def login():    
     print("Olá, bem vindo a tela de login: ")
@@ -32,9 +29,7 @@ def menuFunc(func):
             match opcao:
                 case '1':
                     print(f"Seu salário atual é {func.salario}")                
-                case '2':
-                    con = Conexao()
-                    cursor = con.db.cursor()
+                case '2':                   
                     print("Digite qual dado deseja atualizar: ")
                     print('''
                         1- Nome
@@ -42,34 +37,15 @@ def menuFunc(func):
                         ''')
                     opcao = input()
                     if opcao == '1':
-                        novoNome = input("Digite o novo nome: ")
-                        cursor.execute(f'''UPDATE funcionarios SET func_nome = '{novoNome}' where func_id = '{func.id}'; ''')
-                        con.db.commit()
-                        print("Nome atualizado com sucesso!")
-                        cursor.close()
-                        con.db.close()
-                        
+                        func.queryUpdateName(func)                                           
                     elif opcao == '2':
-                        novoCpf = input("Digite o novo CPF: ")
-                        cursor.execute(f'''UPDATE funcionarios SET func_cpf = '{novoCpf}' where func_id = '{func.id}'; ''')
-                        con.db.commit()
-                        print("CPF atualizado com sucesso!")
-                        cursor.close()
-                        con.db.close()
-                case '3':
-                    con = Conexao()
-                    cursor = con.db.cursor()
-                    con.queryUpdateLogin(cursor, func)
-                    cursor.close()
-                    con.db.close()
-                case '4':
-                    con = Conexao()
-                    cursor = con.db.cursor()
-                    con.queryUpdatePassword(cursor, func)
-                    cursor.close()
-                    con.db.close()
+                        func.queryUpdateCpf(func)                       
+                case '3':                    
+                    func.queryUpdateLogin(func)                    
+                case '4':                    
+                    func.queryUpdatePwd(func)                    
                 case '5':
-                    print("Saindo...")                    
+                    print("Saindo...")                                       
                     return False        
                 case _:
                     print("Opção inválida!")
@@ -87,22 +63,11 @@ def menuGerente(func):
         opcao = input()
         match opcao:
             case '1':
-                con = Conexao()
-                cursor = con.db.cursor()
-                cursor.execute(f'''SELECT f.func_id, f.func_nome as Nome, f.func_cpf as CPF, f.func_salario as Salário, f.func_cargo as Cargo from funcionarios f inner join departamentos d on f.dept_id = d.dept_id where f.dept_id = '{func.dept_id}' and f.func_cargo != 'Gerente';''')
-                funcionarios = cursor.fetchall()
-                for func in funcionarios:
-                    funcionario = Funcionario(func[0], func[1], func[2], func[3], None, func[4])
-                    print(f'''
-            Nome: {funcionario.nome}
-            CPF: {funcionario.cpf}
-            Salário: {funcionario.salario}
-            Cargo: {funcionario.cargo}''')                              
-            case '2':
-                con = Conexao()
-                cursor = con.db.cursor()
+                func.verificaEquipe(func)                              
+            case '2':                
                 id = input("\nDigite o ID do funcionário que quer alterar: ")
-                funcionario = Funcionario(con.querySelectFunc(cursor, id)[0][0], con.querySelectFunc(cursor, id)[0][1], con.querySelectFunc(cursor, id)[0][2], con.querySelectFunc(cursor, id)[0][3], con.querySelectFunc(cursor, id)[0][4], con.querySelectFunc(cursor, id)[0][5])
+                dadosFunc = func.querySelectFunc(id)
+                funcionario = Funcionario(dadosFunc[0][0], dadosFunc[0][1], dadosFunc[0][2], dadosFunc[0][3], dadosFunc[0][4], dadosFunc[0][5])
                 print("\nDigite qual dado você deseja alterar: \n")
                 print("1- Nome")
                 print("2- CPF")
@@ -112,43 +77,51 @@ def menuGerente(func):
                 opcao = input()
                 if opcao == '1':
                     novoNome = input(f"Digite o novo nome para {funcionario.nome}: ")
-                    val = con.verifyPwd(cursor, func)                     
+                    val = func.verifyPwd(func)                     
                     if val == True:
-                        con.queryUpdateFunc(cursor, novoNome, funcionario.cpf, funcionario.salario, funcionario.dept_id, funcionario.cargo, funcionario)
-                        con.db.commit()
-                        cursor.close()
-                        con.db.close()
+                        func.queryUpdateFunc(novoNome, funcionario.cpf, funcionario.salario, funcionario.dept_id, funcionario.cargo, funcionario)                        
                         print("Alteração realizada com sucesso!")
                     else:
                         print("Cancelando operação...")
-            case '3':
-                con = Conexao()
-                cursor = con.db.cursor()
-                nome = input("Digite o nome do funcionário: ")
-                cpf = input("Digite o CPF do funcionário: ")
-                salario = input("Digite o salário do funcionário: ")
-                dept = input("Digite o departamento do funcionário: ")
-                cargo = input("Digite o cargo do funcionário: ")
-                login = input("Digite o login do funcionário: ")
-                senha = input("Digite a senha do funcionário: ")
-                val = con.verifyPwd(cursor, func)
-                if val == True:
-                        con.queryCreateFunc(cursor, nome, cpf, salario, dept, cargo, login, senha)                     
-                        cursor.close()
-                        con.db.close()
-                        print("Funcionário criado com sucesso!")
-                else:
-                    print("Cancelando operação...")
-            case '4':
-                con = Conexao()
-                cursor = con.db.cursor()
-                id = input("\nDigite o ID do funcionário que quer demitir: ")
-                funcionario = Funcionario(con.querySelectFunc(cursor, id)[0][0], con.querySelectFunc(cursor, id)[0][1], con.querySelectFunc(cursor, id)[0][2], con.querySelectFunc(cursor, id)[0][3], con.querySelectFunc(cursor, id)[0][4], con.querySelectFunc(cursor, id)[0][5]) 
-                con.queryDismiss(cursor, funcionario)
-                cursor.close()
-                con.db.close()  
+                if opcao == '2':
+                    novoCpf = input(f"Digite o novo CPF para {funcionario.nome}: ")
+                    val = func.verifyPwd(func)                     
+                    if val == True:
+                        func.queryUpdateFunc(funcionario.nome, novoCpf, funcionario.salario, funcionario.dept_id, funcionario.cargo, funcionario)                        
+                        print("Alteração realizada com sucesso!")
+                    else:
+                        print("Cancelando operação...")
+                if opcao == '3':
+                    novoSalario = input(f"Digite o novo salário para {funcionario.nome}: ")
+                    val = func.verifyPwd(func)                     
+                    if val == True:
+                        func.queryUpdateFunc(funcionario.nome, funcionario.cpf, novoSalario, funcionario.dept_id, funcionario.cargo, funcionario)                        
+                        print("Alteração realizada com sucesso!")
+                    else:
+                        print("Cancelando operação...")
+                if opcao == '4':
+                    novoDept = input(f"Digite o id do novo departamento para {funcionario.nome}: ")
+                    val = func.verifyPwd(func)                     
+                    if val == True:
+                        func.queryUpdateFunc(funcionario.nome, funcionario.cpf, funcionario.salario, novoDept, funcionario.cargo, funcionario)                        
+                        print("Alteração realizada com sucesso!")
+                    else:
+                        print("Cancelando operação...")
+                if opcao == '5':
+                    novoCargo = input(f"Digite o novo nome para {funcionario.nome}: ")
+                    val = func.verifyPwd(func)                     
+                    if val == True:
+                        func.queryUpdateFunc(funcionario.nome, funcionario.cpf, funcionario.salario, funcionario.dept_id, novoCargo, funcionario)                        
+                        print("Alteração realizada com sucesso!")
+                    else:
+                        print("Cancelando operação...")
+            case '3':                
+                func.queryCreateFunc(func)
+            case '4':                
+                func.queryDismiss(func)                  
             case '5':
                 print("Saindo...")
-
+                break
+            
 login()
     
