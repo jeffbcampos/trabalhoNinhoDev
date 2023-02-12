@@ -108,7 +108,7 @@ def menuGerente(func):
                     else:
                         print("Cancelando operação...")
                 if opcao == '5':
-                    novoCargo = input(f"Digite o novo nome para {funcionario.nome}: ")
+                    novoCargo = input(f"Digite o novo cargo de {funcionario.nome}: ")
                     val = func.verifyPwd(func)                     
                     if val == True:
                         func.queryUpdateFunc(funcionario.nome, funcionario.cpf, funcionario.salario, funcionario.dept_id, novoCargo, funcionario)                        
