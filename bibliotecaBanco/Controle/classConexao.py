@@ -11,3 +11,17 @@ class Conexao:
             print("Conexão realizada com sucesso")
         except Error as err:
             print(f"Error: {err}")
+            
+    def querySelect(self, query):                       
+        cursor = self.db.cursor()
+        cursor.execute(query)
+        result = cursor.fetchall()
+        cursor.close()                                
+        return result
+    
+    def queryExecute(self, query):
+        con = self.db                       
+        cursor = self.db.cursor()
+        cursor.execute(query)
+        con.commit()        
+        cursor.close()

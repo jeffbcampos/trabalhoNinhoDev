@@ -1,13 +1,13 @@
 from Modelo.classEmpresa import Empresa
 from Modelo.classEmpresa import Funcionario
 
-
 def login():    
     print("Olá, bem vindo a tela de login: ")
-    func = Empresa().signin()
-    definitionUser(func)
+    func = Empresa().signin() # A FUNÇÃO SIGNIN RETORNARÁ UM FUNCIONÁRIO DO BANCO DE DADOS VALIDANDO LOGIN E SENHA 
+    definitionUser(func) 
     
-def definitionUser(func):
+def definitionUser(func): # ESTA FUNÇÃO DEFINIRÁ SE O USUÁRIO É GERENTE OU FUNCIONÁRIO QUALQUER PARA DETERMINAR QUAL MENU SERÁ ATIVADO
+    
     if func.cargo == 'Gerente':
         menuGerente(func)
     else:
@@ -45,8 +45,9 @@ def menuFunc(func):
                 case '4':                    
                     func.queryUpdatePwd(func)                    
                 case '5':
-                    print("Saindo...")                                       
-                    return False        
+                    print("Saindo...")
+                    func.closeConnection()                                       
+                    break        
                 case _:
                     print("Opção inválida!")
 
@@ -121,6 +122,7 @@ def menuGerente(func):
                 func.queryDismiss(func)                  
             case '5':
                 print("Saindo...")
+                func.closeConnection()
                 break
             
 login()

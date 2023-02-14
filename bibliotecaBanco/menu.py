@@ -2,7 +2,6 @@ from Controle.classConexao import Conexao
 from Modelo.classBiblioteca import Biblioteca
 
 
-
 def menu():
     opcao = ''
     while opcao != 5:
@@ -13,45 +12,19 @@ def menu():
         print("5 - Sair")
 
         opcao = int(input("\nDigite a opção desejada: "))
+        biblioteca = Biblioteca(0, "", 0, 0, "")
         
-        
-        match opcao:
-            case 1:
-                con = Conexao()
-                cursor = con.db.cursor()
-                biblioteca = Biblioteca(0, "", 0, 0, "")
-                biblioteca.listarLivro(cursor)
-                cursor.close()
-                con.db.close()
-                            
-            case 2:
-                con = Conexao()
-                cursor = con.db.cursor()
-                biblioteca = Biblioteca(0, "", 0, 0, "")
-                biblioteca.cadastrarLivro(cursor)
-                con.db.commit()
-                cursor.close()
-                con.db.close()
-                            
-            case 3:
-                con = Conexao()
-                cursor = con.db.cursor()
-                biblioteca = Biblioteca(0, "", 0, 0, "")
-                biblioteca.atualizarLivro(cursor)
-                con.db.commit()
-                cursor.close()
-                con.db.close()
-                            
-            case 4:
-                con = Conexao()
-                cursor = con.db.cursor()
-                biblioteca = Biblioteca(0, "", 0, 0, "")
-                biblioteca.deletarLivro(cursor)
-                con.db.commit()
-                cursor.close()
-                con.db.close()
-                            
+        match (opcao):
+            case 1:               
+                biblioteca.listarLivro()
+            case 2:               
+                biblioteca.cadastrarLivro()
+            case 3:               
+                biblioteca.atualizarLivro()
+            case 4:               
+                biblioteca.deletarLivro()
             case 5:
-                print("Saindo...")                        
+                print("Saindo...")
+                biblioteca.closeConnection()
             case _:
                 print("Opção inválida")

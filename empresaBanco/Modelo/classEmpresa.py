@@ -1,7 +1,7 @@
 from Controle.classConexao import Conexao
 from pwinput import pwinput
-from psycopg2 import Error
-  
+
+con = Conexao()  
 
 class Empresa:
     def __init__(self) -> None:
@@ -11,7 +11,7 @@ class Empresa:
         while True:
             id = input("Digite o seu ID: ")
             query = f'''SELECT login, senha from signin where func_id = '{id}'; '''
-            loginBanco = Conexao().querySelect(query)
+            loginBanco = con.querySelect(query)
             if loginBanco == []:
                 print("ID inválido. Digite Novamente!")
             else:
@@ -24,18 +24,21 @@ class Empresa:
                         if senhaUser == senha:
                             print("Login realizado com sucesso!")
                             query = f'''SELECT * FROM funcionarios where func_id = '{id}' '''
-                            funcDados = Conexao().querySelect(query)[0]
+                            funcDados = con.querySelect(query)[0]
                             if funcDados[5] == "Gerente":
-                                func = Gerente(funcDados[0],funcDados[1],funcDados[2],funcDados[3],funcDados[4],funcDados[5])                                                  
+                                func = Gerente(funcDados[0],funcDados[1],funcDados[2],funcDados[3],funcDados[4],funcDados[5])                                                                                  
                                 return func
                             else:
-                                func = Funcionario(funcDados[0],funcDados[1],funcDados[2],funcDados[3],funcDados[4],funcDados[5])                                               
+                                func = Funcionario(funcDados[0],funcDados[1],funcDados[2],funcDados[3],funcDados[4],funcDados[5])                                                                            
                                 return func                                                      
                         else:
                             print("Senha Inválida!")
                     else:
                         print("Login Inválido!")     
                 break
+    
+    def closeConnection(self):
+        return con.db.close()
 
 class Funcionario(Empresa):
     def __init__(self, login, senha):
@@ -75,14 +78,16 @@ class Funcionario(Empresa):
     def queryUpdateName(self, func):
         novoNome = input("Digite o novo nome: ")
         query = f'''UPDATE funcionarios SET func_nome = '{novoNome}' where func_id = '{func.id}'; '''    
-        Conexao().queryExecute(query)                        
+        con.queryExecute(query)
+                                
         print("Nome atualizado com sucesso!")
         
         
     def queryUpdateCpf(self, func):
         novoCpf = input("Digite o novo cpf: ")
         query = f'''UPDATE funcionarios SET func_cpf = '{novoCpf}' where func_id = '{func.id}'; '''    
-        Conexao().queryExecute(query)                        
+        con.queryExecute(query)
+                                
         print("CPF atualizado com sucesso!")
         
         
@@ -92,7 +97,8 @@ class Funcionario(Empresa):
         if val == True:
             query = f'''
             UPDATE signin SET login = '{novoLogin}' where func_id = '{func.id}'; '''
-            Conexao().queryExecute(query)                                
+            con.queryExecute(query)
+                                            
             print("Atualização de Login realizado com sucesso!")
         else:
             print("Cancelando operação...")
@@ -103,7 +109,8 @@ class Funcionario(Empresa):
         if val == True:
             query = f'''
             UPDATE signin SET senha = '{novaSenha}' where func_id = '{func.id}'; '''
-            Conexao().queryExecute(query)                                
+            con.queryExecute(query)
+                                            
             print("Atualização de Senha realizada com sucesso!")
             
         else:
@@ -112,7 +119,8 @@ class Funcionario(Empresa):
     
     def verifyPwd(self, func):            
             query = f'''SELECT senha from signin where func_id = {func.id};'''            
-            senhaBanco = Conexao().querySelect(query)[0][0]            
+            senhaBanco = con.querySelect(query)[0][0]
+                        
             senha = pwinput("Digite sua senha para confirmar as alterações: ")
             if senha == senhaBanco:                                               
                 return True                                
@@ -123,7 +131,10 @@ class Funcionario(Empresa):
                     return True                    
                 else:                                        
                     return False
-        
+                
+
+
+
 class Gerente(Empresa):
     def __init__(self, login, senha):
         super().__init__(login, senha)                              
@@ -137,9 +148,9 @@ class Gerente(Empresa):
         self.cargo = func_cargo        
         
         
-    def verificaEquipe(self, func):       
+    def verificaEquipe(self, func):               
         query = f'''SELECT func_id, func_nome, func_cpf, func_salario, func_cargo from funcionarios where dept_id = '{func.dept_id}' and func_cargo != 'Gerente';'''        
-        funcionarios = Conexao().querySelect(query)        
+        funcionarios = con.querySelect(query)                
         for func in funcionarios:
             funcionario = Funcionario(func[0], func[1], func[2], func[3], None, func[4])
             print(f'''
@@ -150,12 +161,14 @@ class Gerente(Empresa):
         
     def querySelectFunc(self, id):        
         query = f'''SELECT * FROM funcionarios WHERE func_id = '{id}';'''        
-        func = Conexao().querySelect(query)                              
+        func = con.querySelect(query)
+                                      
         return func
     
     def verifyPwd(self, func):            
         query = f'''SELECT senha from signin where func_id = {func.id};'''            
-        senhaBanco = Conexao().querySelect(query)[0][0]            
+        senhaBanco = con.querySelect(query)[0][0]
+                    
         senha = pwinput("Digite sua senha para confirmar as alterações: ")
         if senha == senhaBanco:                               
             return True                                
@@ -176,7 +189,8 @@ class Gerente(Empresa):
             func_cargo = '{novoCargo}'
             WHERE func_id = '{funcionario.id}'            
         '''
-        Conexao().queryExecute(query)
+        con.queryExecute(query)
+        
         
         
     def queryCreateFunc(self, func):
@@ -192,19 +206,22 @@ class Gerente(Empresa):
             query = f'''
             INSERT INTO funcionarios (func_nome, func_cpf, func_salario, dept_id, func_cargo) VALUES (
 	        '{nome}', '{cpf}', {salario}, {dept}, '{cargo}');'''
-            Conexao().queryExecute(query)
+            con.queryExecute(query)
+            
             query = f'''SELECT func_id FROM funcionarios WHERE func_cpf = '{cpf}';'''
-            id = Conexao().querySelect(query)[0][0]
+            id = con.querySelect(query)[0][0]
             query =  f'''INSERT INTO signin (func_id, login, senha) VALUES ('{id}', '{login}', '{senha}');'''
-            Conexao().queryExecute(query)                     
+            con.queryExecute(query)
+                                 
             print("Funcionário criado com sucesso!")
         else:
             print("Cancelando operação...")
         
             
     def queryDismiss(self, func):
-        id = input("\nDigite o ID do funcionário que quer demitir: ")        
-        funcionario = Funcionario(self.querySelectFunc(id)[0][0], self.querySelectFunc(id)[0][1], self.querySelectFunc(id)[0][2], self.querySelectFunc(id)[0][3], self.querySelectFunc(id)[0][4], self.querySelectFunc(id)[0][5])      
+        id = input("\nDigite o ID do funcionário que quer demitir: ")
+        dadosFunc = self.querySelectFunc(id)[0]         
+        funcionario = Funcionario(dadosFunc[0], dadosFunc[1], dadosFunc[2], dadosFunc[3], dadosFunc[4], dadosFunc[5])      
         print(f"Funcionário {funcionario.nome} selecionado")
         val = self.verifyPwd(func)
         if val == True:      
@@ -214,10 +231,11 @@ class Gerente(Empresa):
                 dept_id = NULL,
                 func_cargo = NULL
                 WHERE func_id = '{funcionario.id}';'''
-            Conexao().queryExecute(query)
+            con.queryExecute(query)
             query = f'''DELETE FROM signin WHERE func_id = '{funcionario.id}';'''        
-            Conexao().queryExecute(query)        
+            con.queryExecute(query)        
             print("Funcionário demitido com sucesso!")
         else:
-            print("Cancelando operação...")
+            print("Cancelando operação...")       
+
                    
