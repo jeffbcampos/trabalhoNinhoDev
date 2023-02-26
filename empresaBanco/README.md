@@ -1,8 +1,8 @@
 Bibliotecas a serem instaladas:
 
-pip install psycopg2
-pip install dotenv 
-pip install bcrypt
+<p> pip install psycopg2 </p>
+<p> pip install dotenv </p>
+<p> pip install bcrypt </p>
 
 Inportações diretasd do Python:
 import os
