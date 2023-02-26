@@ -1,5 +1,6 @@
 from Controle.classConexao import Conexao
 from pwinput import pwinput
+from bcrypt import checkpw, gensalt, hashpw
 
 con = Conexao()  
 
@@ -17,11 +18,11 @@ class Empresa:
             else:
                 while True:
                     login = loginBanco[0][0]
-                    senha = loginBanco[0][1]
+                    senha = loginBanco[0][1].encode('utf-8')
                     loginUser = input("Digite seu login: ")
                     if loginUser == login:
-                        senhaUser = pwinput("Digite sua senha: ")
-                        if senhaUser == senha:
+                        senhaUser = pwinput("Digite sua senha: ").encode('utf-8')
+                        if checkpw(senhaUser, senha):
                             print("Login realizado com sucesso!")
                             query = f'''SELECT * FROM funcionarios where func_id = '{id}' '''
                             funcDados = con.querySelect(query)[0]
@@ -78,16 +79,14 @@ class Funcionario(Empresa):
     def queryUpdateName(self, func):
         novoNome = input("Digite o novo nome: ")
         query = f'''UPDATE funcionarios SET func_nome = '{novoNome}' where func_id = '{func.id}'; '''    
-        con.queryExecute(query)
-                                
+        con.queryExecute(query)                                
         print("Nome atualizado com sucesso!")
         
         
     def queryUpdateCpf(self, func):
         novoCpf = input("Digite o novo cpf: ")
         query = f'''UPDATE funcionarios SET func_cpf = '{novoCpf}' where func_id = '{func.id}'; '''    
-        con.queryExecute(query)
-                                
+        con.queryExecute(query)                                
         print("CPF atualizado com sucesso!")
         
         
@@ -104,7 +103,9 @@ class Funcionario(Empresa):
             print("Cancelando operação...")
             
     def queryUpdatePwd(self, func):        
-        novaSenha = pwinput("Digite a nova senha: ")                       
+        novaSenha = pwinput("Digite a nova senha: ").encode('utf-8')
+        salt = gensalt()
+        novaSenha = hashpw(novaSenha, salt).decode('utf-8')                       
         val = self.verifyPwd(func)
         if val == True:
             query = f'''
@@ -118,23 +119,21 @@ class Funcionario(Empresa):
             
     
     def verifyPwd(self, func):            
-            query = f'''SELECT senha from signin where func_id = {func.id};'''            
-            senhaBanco = con.querySelect(query)[0][0]
-                        
-            senha = pwinput("Digite sua senha para confirmar as alterações: ")
-            if senha == senhaBanco:                                               
-                return True                                
-            else:
-                cancelar = input("Senha incorreta! Deseja tentar novamente?[s/n]: ")
-                if cancelar == "s":
-                    self.verifyPwd(func)                    
-                    return True                    
-                else:                                        
-                    return False
+        query = f'''SELECT senha from signin where func_id = {func.id};'''            
+        senhaBanco = con.querySelect(query)[0][0].encode('utf-8')
+                    
+        senha = pwinput("Digite sua senha para confirmar as alterações: ").encode()
+        if checkpw(senha, senhaBanco):                               
+            return True                                
+        else:
+            cancelar = input("Senha incorreta! Deseja tentar novamente?[s/n]: ")
+            if cancelar == "s":
+                self.verifyPwd(func)                
+                return True                    
+            else:                                    
+                return False
                 
-
-
-
+                
 class Gerente(Empresa):
     def __init__(self, login, senha):
         super().__init__(login, senha)                              
@@ -167,10 +166,10 @@ class Gerente(Empresa):
     
     def verifyPwd(self, func):            
         query = f'''SELECT senha from signin where func_id = {func.id};'''            
-        senhaBanco = con.querySelect(query)[0][0]
+        senhaBanco = con.querySelect(query)[0][0].encode('utf-8')
                     
-        senha = pwinput("Digite sua senha para confirmar as alterações: ")
-        if senha == senhaBanco:                               
+        senha = pwinput("Digite sua senha para confirmar as alterações: ").encode()
+        if checkpw(senha, senhaBanco):                               
             return True                                
         else:
             cancelar = input("Senha incorreta! Deseja tentar novamente?[s/n]: ")
@@ -200,7 +199,9 @@ class Gerente(Empresa):
         dept = input("Digite o departamento do funcionário: ")
         cargo = input("Digite o cargo do funcionário: ")
         login = input("Digite o login do funcionário: ")
-        senha = pwinput("Digite a senha do funcionário: ")
+        senha = pwinput("Digite a senha do funcionário: ").encode('utf-8')
+        salt = gensalt()
+        senha = hashpw(senha, salt).decode('utf-8')
         val = self.verifyPwd(func)
         if val == True:
             query = f'''
