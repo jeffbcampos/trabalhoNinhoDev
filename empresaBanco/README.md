@@ -5,7 +5,7 @@ Bibliotecas a serem instaladas:
 <p> pip install bcrypt </p>
 
 Inportações diretasd do Python:
-import os
+<p> import os </p>
 
 
 
